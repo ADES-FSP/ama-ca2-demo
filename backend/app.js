@@ -1,8 +1,8 @@
-var createError = require('http-errors');
-var express = require('express');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const logger = require('morgan');
 
-var app = express();
+const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
