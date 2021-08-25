@@ -26,6 +26,16 @@ class AmaSession {
         this.answers.push('');
         return this.questions.length - 1;
     }
+
+    getQuestions() {
+        return this.questions;
+    }
+    getAnswers() {
+        return this.answers;
+    }
+    getStatus() {
+        return this.status ? 'started' : 'stopped';
+    }
 }
 
 // responsible for formatting the response body
@@ -54,5 +64,13 @@ module.exports = class Ama {
         const session = this.getAndCheckSession(sessionId);
         const questionId = session.askQuestion(question);
         return { question_id: questionId };
+    }
+
+    getSession(sessionId) {
+        const session = this.getAndCheckSession(sessionId);
+        const questions = session.getQuestions();
+        const answers = session.getAnswers();
+        const status = session.getStatus();
+        return { questions, answers, status };
     }
 };
