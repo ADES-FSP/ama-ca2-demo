@@ -21,9 +21,9 @@ class AmaSession {
     }
 
     askQuestion(question) {
+        if (this.status === 0) throw createError(403, `Session not started`);
         this.questions.push(question);
         this.answers.push('');
-        console.log(this.questions, this.answers);
         return this.questions.length - 1;
     }
 }
