@@ -40,6 +40,13 @@ class AmaSession {
         if (questionId >= this.questions.length) throw createError(404, 'No such question');
         return [this.questions[questionId], this.answers[questionId]];
     }
+
+    answerQuestion(ownerId, questionId, answer) {
+        if (ownerId !== this.ownerId) throw createError(401, `OwnerId ${ownerId} does not match`);
+        if (this.answers[questionId].length > 0) throw createError(400, `Question already answered`);
+        this.answers[questionId] = answer;
+        console.log(this.questions, this.answers);
+    }
 }
 
 // responsible for formatting the response body
@@ -82,5 +89,10 @@ module.exports = class Ama {
         const session = this.getAndCheckSession(sessionId);
         const [question, answer] = session.getQuestion(questionId);
         return { question, answer };
+    }
+
+    answerQuestion(sessionId, ownerId, questionId, answer) {
+        const session = this.getAndCheckSession(sessionId);
+        return session.answerQuestion(ownerId, questionId, answer);
     }
 };

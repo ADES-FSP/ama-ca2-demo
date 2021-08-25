@@ -46,6 +46,16 @@ app.get('/sessions/:sessionId/questions/:questionId', function (req, res, next) 
     return res.json(question);
 });
 
+app.post('/sessions/:sessionId/questions/:questionId', function (req, res, next) {
+    // create a session
+    const sessionId = req.params.sessionId;
+    const questionId = req.params.questionId;
+    const ownerId = req.query.owner_id;
+    const answer = req.body.answer;
+    ama.answerQuestion(sessionId, ownerId, questionId, answer);
+    return res.status(201).send();
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(createError(404, `Resource ${req.method} ${req.originalUrl} not found`));
