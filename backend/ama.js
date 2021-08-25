@@ -128,9 +128,15 @@ module.exports = class Ama {
     }
 
     getQuestion(sessionId, questionId) {
-        const session = this.getAndCheckSession(sessionId);
-        const [question, answer] = session.getQuestion(questionId);
-        return { question, answer };
+        const query = `SELECT * FROM questions_tab WHERE session_id = $1 AND id = $2`;
+        return pool.query(query, [sessionId, questionId]).then(function (result) {
+            if (result.rows.length === 0)
+                throw createError(404, `Unknown Question! Session Id: ${session_id} Question Id: ${question_id}`);
+            return {
+                question: result.rows[0].question,
+                answer: result.rows[0].answer,
+            };
+        });
     }
 
     answerQuestion(sessionId, ownerId, questionId, answer) {
