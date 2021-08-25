@@ -99,7 +99,10 @@ module.exports = class Ama {
                 return { question_id: result.rows[0].id };
             })
             .catch(function (err) {
-                console.log(err);
+                if (err.code === '23503') {
+                    throw createError(404, `Unknown Session: ${sessionId}`);
+                }
+                throw err;
             });
     }
 
