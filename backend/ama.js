@@ -36,6 +36,10 @@ class AmaSession {
     getStatus() {
         return this.status ? 'started' : 'stopped';
     }
+    getQuestion(questionId) {
+        if (questionId >= this.questions.length) throw createError(404, 'No such question');
+        return [this.questions[questionId], this.answers[questionId]];
+    }
 }
 
 // responsible for formatting the response body
@@ -72,5 +76,11 @@ module.exports = class Ama {
         const answers = session.getAnswers();
         const status = session.getStatus();
         return { questions, answers, status };
+    }
+
+    getQuestion(sessionId, questionId) {
+        const session = this.getAndCheckSession(sessionId);
+        const [question, answer] = session.getQuestion(questionId);
+        return { question, answer };
     }
 };
