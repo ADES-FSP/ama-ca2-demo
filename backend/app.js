@@ -34,8 +34,10 @@ app.post('/sessions/:sessionId/questions', function (req, res, next) {
 app.get('/sessions/:sessionId', function (req, res, next) {
     // create a session
     const sessionId = req.params.sessionId;
-    const session = ama.getSession(sessionId);
-    return res.json(session);
+    return ama
+        .getSession(sessionId)
+        .then((session) => res.json(session))
+        .catch(next);
 });
 
 app.get('/sessions/:sessionId/questions/:questionId', function (req, res, next) {

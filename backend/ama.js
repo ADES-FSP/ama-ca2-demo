@@ -98,11 +98,24 @@ module.exports = class Ama {
     }
 
     getSession(sessionId) {
-        const session = this.getAndCheckSession(sessionId);
-        const questions = session.getQuestions();
-        const answers = session.getAnswers();
-        const status = session.getStatus();
-        return { questions, answers, status };
+        const query = `
+            SELECT status, question, answer 
+            FROM sessions_tab 
+                FULL OUTER JOIN questions_tab 
+                ON sessions_tab.session_id = questions_tab.session_id 
+            WHERE sessions_tab.session_id = $1`;
+        return pool.query(query, [sessionId]).then(function (result) {
+            const rows = result.rows;
+            if (rows.length === 0) throw createError(404, `Unknown Session: ${sessionId}`);
+            const questions = [];
+            const answers = [];
+            rows.filter(({ question }) => question).forEach(({ question, answer }) => {
+                questions.push(question);
+                answers.push(answer);
+            });
+            const status = rows[0].status ? 'started' : 'stopped';
+            return { questions, answers, status };
+        });
     }
 
     getQuestion(sessionId, questionId) {
