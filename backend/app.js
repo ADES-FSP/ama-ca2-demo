@@ -17,8 +17,9 @@ app.post('/sessions', function (req, res, next) {
 app.put('/sessions/:sessionId', function (req, res, next) {
     // create a session
     const sessionId = req.params.sessionId;
+    const ownerId = req.query.owner_id;
     const action = req.query.action;
-    ama.updateSession(sessionId, action);
+    ama.updateSession(sessionId, ownerId, action);
     return res.send();
 });
 

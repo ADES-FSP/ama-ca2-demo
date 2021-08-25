@@ -78,9 +78,17 @@ module.exports = class Ama {
         });
     }
 
-    updateSession(sessionId, action) {
-        const session = this.getAndCheckSession(sessionId);
-        session.updateSession(action);
+    updateSession(sessionId, ownerId, action) {
+        let status;
+        if (action === 'stop') {
+            status = 0;
+        } else if (action === 'start') {
+            status = 1;
+        } else {
+            throw createError(400, `Unknown Action: ${action}`);
+        }
+        const query = `UPDATE sessions_tab SET status = $1 WHERE session_id = $2 AND owner_id = $3`;
+        return pool.query(query, [status, sessionId, ownerId]);
     }
 
     askQuestion(sessionId, question) {
