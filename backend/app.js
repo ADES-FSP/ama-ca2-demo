@@ -15,6 +15,14 @@ app.post('/sessions', function (req, res, next) {
     return res.status(201).json(ids);
 });
 
+app.put('/sessions/:sessionId', function (req, res, next) {
+    // create a session
+    const sessionId = req.params.sessionId;
+    const action = req.query.action;
+    ama.updateSession(sessionId, action);
+    return res.send();
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(createError(404, `Resource ${req.method} ${req.originalUrl} not found`));
