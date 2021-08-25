@@ -3,7 +3,7 @@ import './App.css';
 import AskQuestion from './components/AskQuestion';
 import CreateSession from './components/CreateSession';
 import DisplayQuestions from './components/DisplayQuestions';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import AnswerQuestion from './components/AnswerQuestion';
 
 class Home extends React.Component {
