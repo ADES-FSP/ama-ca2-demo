@@ -108,7 +108,7 @@ module.exports = class Ama {
 
     getSession(sessionId) {
         const query = `
-            SELECT status, question, answer 
+            SELECT status, questions_tab.id, question, answer 
             FROM sessions_tab 
                 FULL OUTER JOIN questions_tab 
                 ON sessions_tab.session_id = questions_tab.session_id 
@@ -116,14 +116,16 @@ module.exports = class Ama {
         return pool.query(query, [sessionId]).then(function (result) {
             const rows = result.rows;
             if (rows.length === 0) throw createError(404, `Unknown Session: ${sessionId}`);
+            const questionIds = [];
             const questions = [];
             const answers = [];
-            rows.filter(({ question }) => question).forEach(({ question, answer }) => {
+            rows.filter(({ question }) => question).forEach(({ id, question, answer }) => {
+                questionIds.push(id);
                 questions.push(question);
                 answers.push(answer);
             });
             const status = rows[0].status ? 'started' : 'stopped';
-            return { questions, answers, status };
+            return { questions, question_ids: questionIds, answers, status };
         });
     }
 
@@ -133,6 +135,7 @@ module.exports = class Ama {
             if (result.rows.length === 0)
                 throw createError(404, `Unknown Question! Session Id: ${session_id} Question Id: ${question_id}`);
             return {
+                question_id: result.rows[0].id,
                 question: result.rows[0].question,
                 answer: result.rows[0].answer,
             };
