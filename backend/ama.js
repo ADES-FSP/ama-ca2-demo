@@ -72,8 +72,10 @@ module.exports = class Ama {
     createSession() {
         const sessionId = nanoid(); //assume no collision
         const ownerId = nanoid();
-        this.sessions[sessionId] = new AmaSession(ownerId);
-        return { session_id: sessionId, owner_id: ownerId };
+        const query = `INSERT INTO sessions_tab (session_id, owner_id) VALUES ($1, $2)`;
+        return pool.query(query, [sessionId, ownerId]).then(function () {
+            return { session_id: sessionId, owner_id: ownerId };
+        });
     }
 
     updateSession(sessionId, action) {

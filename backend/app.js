@@ -11,8 +11,7 @@ app.use(express.json());
 
 app.post('/sessions', function (req, res, next) {
     // create a session
-    const ids = ama.createSession();
-    return res.status(201).json(ids);
+    return ama.createSession().then((ids) => res.status(201).json(ids));
 });
 
 app.put('/sessions/:sessionId', function (req, res, next) {
