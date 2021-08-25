@@ -92,9 +92,15 @@ module.exports = class Ama {
     }
 
     askQuestion(sessionId, question) {
-        const session = this.getAndCheckSession(sessionId);
-        const questionId = session.askQuestion(question);
-        return { question_id: questionId };
+        const query = `INSERT INTO questions_tab (session_id, question, answer) VALUES ($1, $2, '') RETURNING *;`;
+        return pool
+            .query(query, [sessionId, question])
+            .then(function (result) {
+                return { question_id: result.rows[0].id };
+            })
+            .catch(function (err) {
+                console.log(err);
+            });
     }
 
     getSession(sessionId) {
@@ -131,18 +137,18 @@ module.exports = class Ama {
 
     setupTable() {
         const query = `
+            DROP TABLE IF EXISTS questions_tab;
             DROP TABLE IF EXISTS sessions_tab;
+
             CREATE TABLE sessions_tab (
                 id SERIAL primary key,
                 session_id VARCHAR(10) unique not null,
                 owner_id VARCHAR(10) unique not null,
                 status INT not null default 0
             );
-
-            DROP TABLE IF EXISTS questions_tab;
             CREATE TABLE questions_tab (
                 id SERIAL primary key,
-                session_id VARCHAR(10) unique not null,
+                session_id VARCHAR(10) not null REFERENCES sessions_tab(session_id),
                 question TEXT not null,
                 answer TEXT not null
             );

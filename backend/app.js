@@ -27,8 +27,7 @@ app.post('/sessions/:sessionId/questions', function (req, res, next) {
     // create a session
     const sessionId = req.params.sessionId;
     const question = req.body.question;
-    const questionId = ama.askQuestion(sessionId, question);
-    return res.status(201).json(questionId);
+    return ama.askQuestion(sessionId, question).then((questionId) => res.status(201).json(questionId));
 });
 
 app.get('/sessions/:sessionId', function (req, res, next) {
