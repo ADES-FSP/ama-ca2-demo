@@ -143,8 +143,18 @@ module.exports = class Ama {
     }
 
     answerQuestion(sessionId, ownerId, questionId, answer) {
-        const session = this.getAndCheckSession(sessionId);
-        return session.answerQuestion(ownerId, questionId, answer);
+        const checkOwnerIdQuery = `SELECT 1 FROM sessions_tab WHERE session_id = $1 AND owner_id = $2`;
+        return pool
+            .query(checkOwnerIdQuery, [sessionId, ownerId])
+            .then(function (result) {
+                if (result.rows.length === 0) throw createError(404, `Unknown Session: ${sessionId}`);
+                const query = `UPDATE questions_tab SET answer = $1 WHERE session_id = $2 AND id = $3`;
+                return pool.query(query, [answer, sessionId, questionId]);
+            })
+            .then(function (result) {
+                if (result.rowCount === 0)
+                    throw createError(404, `Unknown Question! Session Id: ${session_id} Question Id: ${question_id}`);
+            });
     }
 
     setupTable() {

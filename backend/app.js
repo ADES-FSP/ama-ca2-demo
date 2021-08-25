@@ -58,8 +58,12 @@ app.post('/sessions/:sessionId/questions/:questionId', function (req, res, next)
     const questionId = req.params.questionId;
     const ownerId = req.query.owner_id;
     const answer = req.body.answer;
-    ama.answerQuestion(sessionId, ownerId, questionId, answer);
-    return res.status(201).send();
+    return ama
+        .answerQuestion(sessionId, ownerId, questionId, answer)
+        .then(function () {
+            res.status(201).send();
+        })
+        .catch(next);
 });
 
 app.post('/', function (req, res, next) {
