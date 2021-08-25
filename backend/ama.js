@@ -1,6 +1,16 @@
+require('dotenv').config();
+
 const { customAlphabet } = require('nanoid');
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
 const createError = require('http-errors');
+
+const pg = require('pg');
+const pool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false,
+    },
+});
 
 class AmaSession {
     constructor(ownerId) {
@@ -94,5 +104,26 @@ module.exports = class Ama {
     answerQuestion(sessionId, ownerId, questionId, answer) {
         const session = this.getAndCheckSession(sessionId);
         return session.answerQuestion(ownerId, questionId, answer);
+    }
+
+    setupTable() {
+        const query = `
+            DROP TABLE IF EXISTS sessions_tab;
+            CREATE TABLE sessions_tab (
+                id SERIAL primary key,
+                session_id VARCHAR(10) unique not null,
+                owner_id VARCHAR(10) unique not null,
+                status INT not null default 0
+            );
+
+            DROP TABLE IF EXISTS questions_tab;
+            CREATE TABLE questions_tab (
+                id SERIAL primary key,
+                session_id VARCHAR(10) unique not null,
+                question TEXT not null,
+                answer TEXT not null
+            );
+        `;
+        return pool.query(query);
     }
 };

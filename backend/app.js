@@ -56,6 +56,14 @@ app.post('/sessions/:sessionId/questions/:questionId', function (req, res, next)
     return res.status(201).send();
 });
 
+app.post('/', function (req, res, next) {
+    ama.setupTable()
+        .then(function () {
+            return res.status(201).send();
+        })
+        .catch(next);
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(createError(404, `Resource ${req.method} ${req.originalUrl} not found`));
