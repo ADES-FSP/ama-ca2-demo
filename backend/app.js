@@ -1,11 +1,19 @@
 const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
+const Ama = require('./ama');
+const ama = new Ama();
 
 const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
+
+app.post('/sessions', function (req, res, next) {
+    // create a session
+    const ids = ama.createSession();
+    return res.status(201).json(ids);
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
